@@ -1,6 +1,6 @@
 {
   "name": "https-everywhere-builder",
-  "version": "0.0.1",
+  "version": "5.2.19",
   "description": "https everywhere ruleset builder for Brave",
   "devDependencies": {
     "commander": "^2.9.0",

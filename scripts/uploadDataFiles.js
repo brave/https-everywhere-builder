@@ -2,7 +2,9 @@ const fs = require('fs')
 const s3 = require('s3')
 const commander = require('commander')
 
-const dataFileVersion = '5.2' // TODO: make this not hardcoded
+const splitVersion = process.env.npm_package_version.split('.')
+splitVersion.splice(2)
+const dataFileVersion = splitVersion.join('.')
 
 const client = s3.createClient({
   maxAsyncS3: 20,
