@@ -119,7 +119,7 @@ const buildDataFiles = () => {
         if (err) {
           console.error(err)
         } else {
-          exec('tar -czf httpse.leveldb.tgz httpse.leveldb', {
+          exec('zip -r httpse.leveldb.zip httpse.leveldb && tar -czf httpse.leveldb.tgz httpse.leveldb', {
             cwd: 'out'
           }, (err) => {
             if (err) {
