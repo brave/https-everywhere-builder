@@ -47,7 +47,8 @@ const buildDataFiles = () => {
     'EBay_static.com.xml': 'breaks suggested product image previews',
     'Cisco.xml': 'breaks http://www.cisco.com/c/m/en_us/training-events/events-webinars/techwise-tv/listings.html',
     'GQ.xml': 'mixed content on gq.com',
-    'Where_2_Get_It.xml': 'maps missing on http://us.coopertire.com/Customer-Care/Dealer-Locator.aspx?form=locator_search&addressline=92346'
+    'Where_2_Get_It.xml': 'maps missing on http://us.coopertire.com/Customer-Care/Dealer-Locator.aspx?form=locator_search&addressline=92346',
+    'Thompson_Hotels.com.xml': 'missing stylesheets on http://www.thompsonhotels.com/'
   }
 
   const rulesets = JSON.parse(fs.readFileSync('./https-everywhere/chrome/content/rulesets.json', 'utf8'))
@@ -64,6 +65,9 @@ const buildDataFiles = () => {
       if (ruleset.$.f in exclusions) {
         console.log('NOTE: Excluding rule', JSON.stringify(result))
         ruleset.$.default_off = exclusions[ruleset.$.f]
+      } else if (ruleset.$.default_off === 'failed ruleset test') {
+        // Ignore ruleset test failures
+        ruleset.$.default_off = ''
       }
       rulesets.rulesetStrings[id] = result
     })
