@@ -7,11 +7,13 @@
     "level": "^1.7.0",
     "nsp": "^2.3.0",
     "s3": "^4.4.0",
+    "standard": "^10.0.2",
     "xml2js": "^0.4.17"
   },
   "scripts": {
     "build": "node scripts/preloadHTTPSE.js",
     "check-security": "nsp check",
+    "lint": "standard",
     "upload": "node scripts/uploadDataFiles.js"
   },
   "license": "MPL-2.0"
