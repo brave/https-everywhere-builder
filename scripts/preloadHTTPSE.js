@@ -6,8 +6,10 @@ const levelup = require('level')
 const rmDir = require('./util').rmDir
 const exec = require('child_process').exec
 
+const xpiVersion = '5.2.21' // Manually update this to latest version
+
 const downloadRulesets = (dir, cb) => {
-  const downloadURL = `https://www.eff.org/files/https-everywhere-${process.env.npm_package_version}-eff.xpi`
+  const downloadURL = `https://www.eff.org/files/https-everywhere-${xpiVersion}-eff.xpi`
   const xpiFile = fs.createWriteStream('httpse.xpi')
   http.get(downloadURL, (response) => {
     response.pipe(xpiFile)
@@ -65,9 +67,6 @@ const buildDataFiles = () => {
       if (ruleset.$.f in exclusions) {
         console.log('NOTE: Excluding rule', JSON.stringify(result))
         ruleset.$.default_off = exclusions[ruleset.$.f]
-      } else if (ruleset.$.default_off === 'failed ruleset test') {
-        // Ignore ruleset test failures
-        ruleset.$.default_off = ''
       }
       rulesets.rulesetStrings[id] = result
     })
