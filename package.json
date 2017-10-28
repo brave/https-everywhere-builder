@@ -3,12 +3,12 @@
   "version": "5.2.21",
   "description": "https everywhere ruleset builder for Brave",
   "devDependencies": {
-    "commander": "^2.9.0",
+    "commander": "^2.11.0",
     "level": "^1.7.0",
-    "nsp": "^2.3.0",
+    "nsp": "^2.8.1",
     "s3": "^4.4.0",
-    "standard": "^10.0.2",
-    "xml2js": "^0.4.17"
+    "standard": "^10.0.3",
+    "xml2js": "^0.4.19"
   },
   "scripts": {
     "build": "node scripts/preloadHTTPSE.js",
