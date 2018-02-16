@@ -38,7 +38,6 @@ const buildDataFiles = () => {
     'Fox News': 'breaks foxnews.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY',
     'Digg (partial)': 'breaks digg.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY',
     'Nike.com (partial)': 'breaks nikeplus.com',
-    'Slashdot.org (partial)': 'redirect loop on mobile slashdot.org',
     'Cargo (partial)': 'breaks cargocollective.com',
     'TMZ.com': 'breaks www.tmz.com',
     'BusinessInsider.com (partial)': 'breaks http://www.businessinsider.com/silicon-valley-100-2016-6?op=0',
