@@ -42,7 +42,6 @@ const buildDataFiles = () => {
     'TMZ.com': 'breaks www.tmz.com',
     'BusinessInsider.com (partial)': 'breaks http://www.businessinsider.com/silicon-valley-100-2016-6?op=0',
     'Tesco (partial)': 'breaks tesco.com due to CSP mismatch',
-    'Vodafone.ie (partial)': 'breaks pagination on http://shop.vodafone.ie/shop/phonesAndPlans/phonesAndPlansHome.jsp?subPage=phones&planFilter=onAccount',
     'iDownloadBlog (partial)': 'breaks http://www.idownloadblog.com/',
     'GQ.com (partial)': 'mixed content on gq.com',
     'Where 2 Get It (partial)': 'maps missing on http://us.coopertire.com/Customer-Care/Dealer-Locator.aspx?form=locator_search&addressline=92346',
