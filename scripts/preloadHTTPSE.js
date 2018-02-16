@@ -40,7 +40,6 @@ const buildDataFiles = () => {
     'Nike.com (partial)': 'breaks nikeplus.com',
     'Cargo (partial)': 'breaks cargocollective.com',
     'TMZ.com': 'breaks www.tmz.com',
-    'BusinessInsider.com (partial)': 'breaks http://www.businessinsider.com/silicon-valley-100-2016-6?op=0',
     'Tesco (partial)': 'breaks tesco.com due to CSP mismatch',
     'iDownloadBlog (partial)': 'breaks http://www.idownloadblog.com/',
     'GQ.com (partial)': 'mixed content on gq.com',
