@@ -37,7 +37,6 @@ const buildDataFiles = () => {
   const exclusions = {
     'Fox News': 'breaks foxnews.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY',
     'Digg (partial)': 'breaks digg.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY',
-    'Tesco (partial)': 'breaks tesco.com due to CSP mismatch',
   }
 
   const rulesets = JSON.parse(fs.readFileSync('./https-everywhere/rules/default.rulesets', 'utf8'))
