@@ -37,7 +37,6 @@ const buildDataFiles = () => {
   const exclusions = {
     'Fox News': 'breaks foxnews.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY',
     'Digg (partial)': 'breaks digg.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY',
-    'Nike.com (partial)': 'breaks nikeplus.com',
     'Cargo (partial)': 'breaks cargocollective.com',
     'TMZ.com': 'breaks www.tmz.com',
     'Tesco (partial)': 'breaks tesco.com due to CSP mismatch',
