@@ -40,7 +40,6 @@ const buildDataFiles = () => {
     'Cargo (partial)': 'breaks cargocollective.com',
     'TMZ.com': 'breaks www.tmz.com',
     'Tesco (partial)': 'breaks tesco.com due to CSP mismatch',
-    'GQ.com (partial)': 'mixed content on gq.com',
   }
 
   const rulesets = JSON.parse(fs.readFileSync('./https-everywhere/rules/default.rulesets', 'utf8'))
