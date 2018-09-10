@@ -5,7 +5,7 @@ const levelup = require('level')
 const rmDir = require('./util').rmDir
 const exec = require('child_process').exec
 
-const xpiVersion = '2018.1.29' // Manually update this to latest version
+const xpiVersion = '2018.8.22' // Manually update this to latest version
 
 const downloadRulesets = (dir, cb) => {
   const downloadURL = `https://www.eff.org/files/https-everywhere-${xpiVersion}-eff.xpi`
@@ -35,6 +35,7 @@ const buildDataFiles = () => {
   // Manually exclude sites that are broken until they are fixed in the next
   // HTTPS Everywhere release.
   const exclusions = {
+    'Digg (partial)': 'breaks digg.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY',
     'Nike.com (partial)': 'breaks nikeplus.com',
     'PJ Media': 'mixed content on https://pjmedia.com/instapundit/',
     'Slashdot.org (partial)': 'redirect loop on mobile slashdot.org',
