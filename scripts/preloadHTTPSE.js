@@ -35,6 +35,7 @@ const buildDataFiles = () => {
   // Manually exclude sites that are broken until they are fixed in the next
   // HTTPS Everywhere release.
   const exclusions = {
+    'Fox News': 'breaks foxnews.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY',
     'Digg (partial)': 'breaks digg.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY',
     'Nike.com (partial)': 'breaks nikeplus.com',
     'PJ Media': 'mixed content on https://pjmedia.com/instapundit/',
