@@ -37,20 +37,6 @@ const buildDataFiles = () => {
   const exclusions = {
     'Fox News': 'breaks foxnews.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY',
     'Digg (partial)': 'breaks digg.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY',
-    'Nike.com (partial)': 'breaks nikeplus.com',
-    'PJ Media': 'mixed content on https://pjmedia.com/instapundit/',
-    'Slashdot.org (partial)': 'redirect loop on mobile slashdot.org',
-    'Delta.com (partial)': 'https://delta.com does not redirect to https://www.delta.com',
-    'Cargo (partial)': 'breaks cargocollective.com',
-    'TMZ.com': 'breaks www.tmz.com',
-    'BusinessInsider.com (partial)': 'breaks http://www.businessinsider.com/silicon-valley-100-2016-6?op=0',
-    'Tesco (partial)': 'breaks tesco.com due to CSP mismatch',
-    'Vodafone.ie (partial)': 'breaks pagination on http://shop.vodafone.ie/shop/phonesAndPlans/phonesAndPlansHome.jsp?subPage=phones&planFilter=onAccount',
-    'iDownloadBlog (partial)': 'breaks http://www.idownloadblog.com/',
-    'Cisco.com (partial)': 'breaks http://www.cisco.com/c/m/en_us/training-events/events-webinars/techwise-tv/listings.html',
-    'GQ.com (partial)': 'mixed content on gq.com',
-    'Where 2 Get It (partial)': 'maps missing on http://us.coopertire.com/Customer-Care/Dealer-Locator.aspx?form=locator_search&addressline=92346',
-    'Thompson Hotels.com (partial)': 'missing stylesheets on http://www.thompsonhotels.com/'
   }
 
   const rulesets = JSON.parse(fs.readFileSync('./https-everywhere/rules/default.rulesets', 'utf8'))
