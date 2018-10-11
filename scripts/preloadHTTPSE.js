@@ -26,9 +26,9 @@ const downloadRulesets = (dir, cb) => {
       })
     })
   })
-  .on('error', (err) => {
-    console.log(`Error downloading ${downloadURL}`, err)
-  })
+    .on('error', (err) => {
+      console.log(`Error downloading ${downloadURL}`, err)
+    })
 }
 
 const buildDataFiles = () => {
@@ -36,7 +36,7 @@ const buildDataFiles = () => {
   // HTTPS Everywhere release.
   const exclusions = {
     'Fox News': 'breaks foxnews.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY',
-    'Digg (partial)': 'breaks digg.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY',
+    'Digg (partial)': 'breaks digg.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY'
   }
 
   const rulesets = JSON.parse(fs.readFileSync('./https-everywhere/rules/default.rulesets', 'utf8'))
@@ -90,7 +90,9 @@ const buildDataFiles = () => {
   console.log('creating httpse.leveldb')
   rmDir('./out/httpse.leveldb')
 
-  const httpseLevelDB = levelup('./out/httpse.leveldb', {compression: false, errorIfExists: true})
+  const httpseLevelDB = levelup('./out/httpse.leveldb', {
+    compression: false, errorIfExists: true
+  })
 
   let batch = httpseLevelDB.batch()
 
@@ -121,7 +123,9 @@ const buildDataFiles = () => {
       for (const target of ruleset.target) {
         const reverseTarget = target.split('.').reverse().join('.')
         if (targetRuleSets.length > 0) {
-          batch.put(reverseTarget, JSON.stringify(targetRuleSets), {sync: true})
+          batch.put(reverseTarget, JSON.stringify(targetRuleSets), {
+            sync: true
+          })
         }
       }
     }
