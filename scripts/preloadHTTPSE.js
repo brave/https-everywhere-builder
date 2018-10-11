@@ -5,7 +5,7 @@ const levelup = require('level')
 const rmDir = require('./util').rmDir
 const exec = require('child_process').exec
 
-const xpiVersion = '2018.8.22' // Manually update this to latest version
+const xpiVersion = '2018.9.19' // Manually update this to latest version
 
 const downloadRulesets = (dir, cb) => {
   const downloadURL = `https://www.eff.org/files/https-everywhere-${xpiVersion}-eff.xpi`
