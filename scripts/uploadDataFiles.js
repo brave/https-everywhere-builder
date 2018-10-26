@@ -1,5 +1,5 @@
 const fs = require('fs')
-const s3 = require('s3')
+const s3 = require('s3-client')
 const commander = require('commander')
 
 const splitVersion = process.env.npm_package_version.split('.')

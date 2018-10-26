@@ -4,14 +4,13 @@
   "description": "https everywhere ruleset builder for Brave",
   "devDependencies": {
     "commander": "^2.11.0",
-    "level": "^1.7.0",
-    "nsp": "^2.8.1",
-    "s3": "^4.4.0",
-    "standard": "^10.0.3"
+    "level": "^4.0.0",
+    "s3-client": "^4.4.2",
+    "standard": "^12.0.1"
   },
   "scripts": {
     "build": "node scripts/preloadHTTPSE.js",
-    "check-security": "nsp check",
+    "check-security": "npm audit",
     "lint": "standard",
     "upload": "node scripts/uploadDataFiles.js"
   },
