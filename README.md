@@ -16,6 +16,6 @@ point number is no longer used and can be set to anything.)
 
 ## Uploading to S3
 
-`npm run upload [--prod]`
+`npm run upload [-- --prod]`
 
-Without `--prod`, this uploads to the test bucket.
+Without the `prod` option, this uploads to the test bucket.
