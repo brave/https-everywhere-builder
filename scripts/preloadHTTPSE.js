@@ -23,15 +23,15 @@ const downloadRulesets = (dir, cb) => {
       let target = `default.rulesets.${Number(timestamp)}.gz`
 
       https.get(baseURL + target, (stream) => {
-        // default.rulesets.${timestamp}.gz is gzipped, gunzip accordingly
+        // ${target} is gzipped, gunzip accordingly
         // and pipe the output to ${filename}
         let filename = path.join(dir, 'default.rulesets')
-        let zip = fs.createWriteStream(filename)
+        let output = fs.createWriteStream(filename)
 
-        stream.pipe(zlib.createGunzip()).pipe(zip)
+        stream.pipe(zlib.createGunzip()).pipe(output)
 
-        zip.on('finish', () => {
-          zip.close(() => {
+        output.on('finish', () => {
+          output.close(() => {
             // everything is fine here
             cb()
           }, (err) => {
