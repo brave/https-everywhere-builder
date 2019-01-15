@@ -1,34 +1,50 @@
 'use strict'
 const fs = require('fs')
-const http = require('https')
+const zlib = require('zlib')
+const path = require('path')
+const https = require('https')
 const levelup = require('level')
 const rmDir = require('./util').rmDir
 const exec = require('child_process').exec
 
-const xpiVersion = '2018.9.19' // Manually update this to latest version
-
 const downloadRulesets = (dir, cb) => {
-  const downloadURL = `https://www.eff.org/files/https-everywhere-${xpiVersion}-eff.xpi`
-  const xpiFile = fs.createWriteStream('httpse.xpi')
-  http.get(downloadURL, (response) => {
-    response.pipe(xpiFile)
-    xpiFile.on('finish', () => {
-      xpiFile.close(() => {
-        exec('unzip ../httpse.xpi', {
-          cwd: 'https-everywhere'
-        }, (err) => {
-          if (err) {
-            throw err
-          } else {
+  let timestamp = ''
+  let baseURL = 'https://www.https-rulesets.org/v1/'
+
+  // Obtain the latest rulesets timestamp from EFF's official endpoint
+  https.get(baseURL + 'latest-rulesets-timestamp', (response) => {
+    response.on('data', (data) => {
+      timestamp += data.toString()
+    })
+
+    // Download the rulesets once we obtained the timestamp
+    response.on('end', () => {
+      // ${timestamp} comes with trailing newlines, parse it and convert it back
+      let target = `default.rulesets.${Number(timestamp)}.gz`
+
+      https.get(baseURL + target, (stream) => {
+        // default.rulesets.${timestamp}.gz is gzipped, gunzip accordingly
+        // and pipe the output to ${filename}
+        let filename = path.join(dir, 'default.rulesets')
+        let zip = fs.createWriteStream(filename)
+
+        stream.pipe(zlib.createGunzip()).pipe(zip)
+
+        zip.on('finish', () => {
+          zip.close(() => {
+            // everything is fine here
             cb()
-          }
+          }, (err) => {
+            console.log(`ERROR: Failed to write to ${filename}: ${err}`)
+          })
         })
-      })
+      }).on('error', (err) => {
+        console.log(`ERROR: Failed to retrieve ${target}: ${err}`)
+      }).end()
     })
-  })
-    .on('error', (err) => {
-      console.log(`Error downloading ${downloadURL}`, err)
-    })
+  }).on('error', (err) => {
+    console.log(`ERROR: Failed to retrieve the latest rulesets timestamp: ${err}`)
+  }).end()
 }
 
 const buildDataFiles = () => {
@@ -39,7 +55,10 @@ const buildDataFiles = () => {
     'Digg (partial)': 'breaks digg.com on C70+ with NET::ERR_CERT_SYMANTEC_LEGACY'
   }
 
-  const rulesets = JSON.parse(fs.readFileSync('./https-everywhere/rules/default.rulesets', 'utf8'))
+  let rulesets = JSON.parse(fs.readFileSync('./https-everywhere/rules/default.rulesets', 'utf8'))
+  if (rulesets != null) {
+    rulesets = rulesets.rulesets
+  }
 
   let jsonOutput = {
     'rulesetStrings': [],
@@ -157,8 +176,9 @@ const buildDataFiles = () => {
 
 rmDir('./https-everywhere')
 fs.mkdirSync('./https-everywhere')
+fs.mkdirSync('./https-everywhere/rules')
 rmDir('./out')
 fs.mkdirSync('./out')
 
 console.log('downloading rulesets')
-downloadRulesets('./https-everywhere', buildDataFiles)
+downloadRulesets('./https-everywhere/rules', buildDataFiles)
