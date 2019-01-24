@@ -6,9 +6,10 @@ Builds HTTPS Everywhere ruleset files for Brave.
 
 If there are rulesets that are broken and need to be disabled, add them to the `exclusions` list.
 
-## Building
+## Building locally
 
-`npm run build`
+    npm install
+    npm run build
 
 ## Uploading to S3
 
