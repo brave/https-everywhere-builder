@@ -6,16 +6,23 @@ Builds HTTPS Everywhere ruleset files for Brave.
 
 If there are rulesets that are broken and need to be disabled, add them to the `exclusions` list.
 
-If there is a breaking ruleset format change, bump the version number in
-`package.json` by one major point release. (Ex: 5.2.21 to 5.3.0. The minor
-point number is no longer used and can be set to anything.)
+## Building locally
 
-## Building
+    npm install
+    npm run build
 
-`npm run build`
+## Testing locally
 
-## Uploading to S3
+1. Copy `out/httpse.leveldb.zip` into `~/BraveSoftware/Brave-Browser-Beta/oofiananboodjbbmdelgdommihjbkfag/*/*/` overwriting the existing file.
+2. Delete the `httpse.leveldb` directory.
+3. Unzip `httpse.leveldb.zip`.
+4. Start the browser and ensure that <https://https-everywhere.badssl.com/> works.
+5. Find a site that was added in the last release and check that it gets upgraded. Check it first with `curl --head` to make sure it doesn't redirect to HTTPS server-side.
 
-`npm run upload [-- --prod]`
+## Releasing a new version
 
-Without the `prod` option, this uploads to the test bucket.
+1. Connect to the Brave VPN.
+2. On Jenkins, look for the `brave-core-ext-https-everywhere-update-publish` job.
+3. Click "Build Now".
+
+Once that's done, the new extension should be available within a few minutes.
