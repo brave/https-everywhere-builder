@@ -11,8 +11,10 @@ If there are rulesets that are broken and need to be disabled, add them to the `
     npm install
     npm run build
 
-## Uploading to S3
+## Releasing a new version
 
-`npm run upload [-- --prod]`
+1. Connect to the Brave VPN.
+2. On Jenkins, look for the `brave-core-ext-https-everywhere-update-publish` job.
+3. Click "Build Now".
 
-Without the `prod` option, this uploads to the test bucket.
+Once that's done, the new extension should be available within a few minutes.
