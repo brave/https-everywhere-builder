@@ -16,7 +16,7 @@ If there are rulesets that are broken and need to be disabled, add them to the `
 1. Copy `out/httpse.leveldb.zip` into `~/BraveSoftware/Brave-Browser-Beta/oofiananboodjbbmdelgdommihjbkfag/*/*/` overwriting the existing file.
 2. Delete the `httpse.leveldb` directory.
 3. Unzip `httpse.leveldb.zip`.
-4. Start the browser and ensure that <https://https-everywhere.badssl.com/> works.
+4. Start the browser and ensure that <http://https-everywhere.badssl.com/> works.
 5. Find a site that was added in the last release and check that it gets upgraded. Check it first with `curl --head` to make sure it doesn't redirect to HTTPS server-side.
 
 ## Releasing a new version
