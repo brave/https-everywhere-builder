@@ -1,6 +1,7 @@
 const fs = require('fs')
 const s3 = require('s3-client')
 const commander = require('commander')
+const process = require('process')
 
 const splitVersion = process.env.npm_package_version.split('.')
 splitVersion.splice(2)
@@ -51,9 +52,15 @@ const date = new Date().toISOString().split('.')[0]
 const dataFilenames = fs.readdirSync('out')
 dataFilenames.forEach((filename) => {
   if (commander.prod) {
-    p = p.then(uploadFile.bind(null, dataFileVersion, `out/${filename}`, filename))
-    p = p.then(uploadFile.bind(null, `backups/${date}`, `out/${filename}`, filename))
+    p = p.then(uploadFile.bind(null, dataFileVersion, `out/${filename}`, filename)).catch(() => {
+      process.exit(1)
+    })
+    p = p.then(uploadFile.bind(null, `backups/${date}`, `out/${filename}`, filename)).catch(() => {
+      process.exit(1)
+    })
   } else {
-    p = p.then(uploadFile.bind(null, `test/${dataFileVersion}`, `out/${filename}`, filename))
+    p = p.then(uploadFile.bind(null, `test/${dataFileVersion}`, `out/${filename}`, filename)).catch(() => {
+      process.exit(1)
+    })
   }
 })
