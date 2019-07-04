@@ -13,7 +13,7 @@ If there are rulesets that are broken and need to be disabled, add them to the `
 
 ## Testing locally
 
-1. Copy `out/httpse.leveldb.zip` into `~/BraveSoftware/Brave-Browser-Beta/oofiananboodjbbmdelgdommihjbkfag/*/*/` overwriting the existing file.
+1. Copy `out/httpse.leveldb.zip` into `~/.config/BraveSoftware/Brave-Browser-Beta/oofiananboodjbbmdelgdommihjbkfag/*/*/` overwriting the existing file.
 2. Delete the `httpse.leveldb` directory.
 3. Unzip `httpse.leveldb.zip`.
 4. Start the browser and ensure that <http://https-everywhere.badssl.com/> works.
