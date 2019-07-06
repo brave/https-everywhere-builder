@@ -3,6 +3,7 @@
   "version": "6.0.0",
   "description": "https everywhere ruleset builder for Brave",
   "devDependencies": {
+    "archiver": "^3.0.0",
     "commander": "^2.11.0",
     "level": "^5.0.1",
     "s3-client": "^4.4.2",

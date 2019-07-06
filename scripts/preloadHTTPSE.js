@@ -1,11 +1,11 @@
 'use strict'
 const fs = require('fs')
 const zlib = require('zlib')
+const archiver = require('archiver')
 const path = require('path')
 const https = require('https')
 const levelup = require('level')
 const rmDir = require('./util').rmDir
-const exec = require('child_process').exec
 
 const downloadRulesets = (dir, cb) => {
   let timestamp = ''
@@ -158,16 +158,49 @@ const buildDataFiles = () => {
         if (err) {
           console.error(err)
         } else {
-          exec('zip -r httpse.leveldb.zip httpse.leveldb && tar -czf httpse.leveldb.tgz httpse.leveldb', {
-            cwd: 'out'
-          }, (err) => {
-            if (err) {
-              throw err
+          const makeArchive = function (options, callback) {
+            let archive = null
+            let compressor = null
+            let output = fs.createWriteStream(options.filename)
+
+            if (options.type === 'zip') {
+              archive = archiver('zip', {
+                zlib: { level: 9 }
+              })
+              archive.pipe(output)
             } else {
-              rmDir('./out/httpse.leveldb')
-              console.log('done')
+              archive = archiver('tar')
+              compressor = zlib.createGzip()
+              archive.pipe(compressor).pipe(output)
             }
-          })
+
+            archive.directory(options.source)
+            archive.finalize()
+
+            output.on('finish', () => {
+              if (callback) {
+                callback()
+              }
+            })
+          }
+
+          try {
+            // change working directory to ease archiving
+            process.chdir('./out/')
+            // create zip archive
+            makeArchive({ type: 'zip', source: 'httpse.leveldb', filename: './httpse.leveldb.zip' }, function () {
+              console.log('successfully created: httpse.leveldb.zip')
+              // create gzipped tar archive
+              makeArchive({ type: 'tgz', source: 'httpse.leveldb', filename: './httpse.leveldb.tgz' }, function () {
+                console.log('successfully created: httpse.leveldb.tgz')
+                // everything is fine here, perform cleanup
+                rmDir('./httpse.leveldb')
+                console.log('done')
+              })
+            })
+          } catch (error) {
+            console.log(`ERROR: Failed to create archive: ${error}`)
+          }
         }
       })
     }
