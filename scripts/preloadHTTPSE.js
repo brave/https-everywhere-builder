@@ -9,7 +9,7 @@ const exec = require('child_process').exec
 
 const downloadRulesets = (dir, cb) => {
   let timestamp = ''
-  let baseURL = 'https://www.https-rulesets.org/v1/'
+  const baseURL = 'https://www.https-rulesets.org/v1/'
 
   // Obtain the latest rulesets timestamp from EFF's official endpoint
   https.get(baseURL + 'latest-rulesets-timestamp', (response) => {
@@ -20,13 +20,13 @@ const downloadRulesets = (dir, cb) => {
     // Download the rulesets once we obtained the timestamp
     response.on('end', () => {
       // ${timestamp} comes with trailing newlines, parse it and convert it back
-      let target = `default.rulesets.${Number(timestamp)}.gz`
+      const target = `default.rulesets.${Number(timestamp)}.gz`
 
       https.get(baseURL + target, (stream) => {
         // ${target} is gzipped, gunzip accordingly
         // and pipe the output to ${filename}
-        let filename = path.join(dir, 'default.rulesets')
-        let output = fs.createWriteStream(filename)
+        const filename = path.join(dir, 'default.rulesets')
+        const output = fs.createWriteStream(filename)
 
         stream.pipe(zlib.createGunzip()).pipe(output)
 
@@ -57,9 +57,9 @@ const buildDataFiles = () => {
     rulesets = rulesets.rulesets
   }
 
-  let jsonOutput = {
-    'rulesetStrings': [],
-    'targets': {}
+  const jsonOutput = {
+    rulesetStrings: [],
+    targets: {}
   }
 
   for (const ruleset of rulesets) {
@@ -76,13 +76,13 @@ const buildDataFiles = () => {
         jsonOutput['targets'][target].push(jsonOutput['rulesetStrings'].length)
       }
 
-      let r = {
+      const r = {
         ruleset: {
-          'name': ruleset.name,
-          'rule': ruleset.rule.map((rule) => {
+          name: ruleset.name,
+          rule: ruleset.rule.map((rule) => {
             return {
-              'from': rule.from,
-              'to': rule.to
+              from: rule.from,
+              to: rule.to
             }
           })
         }
@@ -91,7 +91,7 @@ const buildDataFiles = () => {
       if (ruleset.exclusion) {
         r.exclusion = ruleset.exclusion.map((exclusion) => {
           return {
-            'pattern': exclusion
+            pattern: exclusion
           }
         })
       }
@@ -110,7 +110,7 @@ const buildDataFiles = () => {
     compression: false, errorIfExists: true
   })
 
-  let batch = httpseLevelDB.batch()
+  const batch = httpseLevelDB.batch()
 
   for (const ruleset of rulesets) {
     if (!ruleset.default_off && !ruleset.platform) {
@@ -120,7 +120,7 @@ const buildDataFiles = () => {
       }
 
       let targetRuleSets = []
-      let rule = {
+      const rule = {
         r: ruleset.rule.map((rule) => {
           if (rule.from === '^http:' && rule.to === 'https:') {
             return { d: 1 }
