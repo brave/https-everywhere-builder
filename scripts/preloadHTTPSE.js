@@ -1,58 +1,86 @@
 'use strict'
 const fs = require('fs')
-const zlib = require('zlib')
-const path = require('path')
-const https = require('https')
+const { gunzip } = require('zlib')
+const crypto = require('crypto')
+const requestPromise = require('request-promise-native')
 const levelup = require('level')
 const rmDir = require('./util').rmDir
 const exec = require('child_process').exec
 
-const downloadRulesets = (dir, cb) => {
-  let timestamp = ''
-  const baseURL = 'https://www.https-rulesets.org/v1/'
+// Taken from https://github.com/EFForg/https-everywhere/issues/18138#issuecomment-509430039
 
-  // Obtain the latest rulesets timestamp from EFF's official endpoint
-  https.get(baseURL + 'latest-rulesets-timestamp', (response) => {
-    response.on('data', (data) => {
-      timestamp += data.toString()
+const publicKey = `\
+-----BEGIN PUBLIC KEY-----
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA1cwvFQu3Kw+Pz8bcEFuV
+5zx0ZheDsc4Tva7Qv6BL90/sDLqCW79Y543nDkPtNVfFH/89pt2kSPp/IcS5XnYi
+w6zBQeFuILFw5JpvZt14K0s4e025Q9CXfhYKIBKT9PnqihwAacjMa6rQb7RTu7Xx
+VvqxRb3b0vx2CR40LSlYZ8H/KpeaUwq2oz+fyrI6LFTeYvbO3ZuLKeK5xV1a32xe
+TVMFkIj3LxnQalxq+DRHfj7LRRoTnbRDW4uoDc8aVpLFliuO79jUKbobz4slpiWJ
+4wjKR/O6OK13HbZUiOSxi8Bms+UqBPOyzbMVpmA7lv/zWdaLu1IVlVXQyLVbbrqI
+6llRqfHdcJoEl+eC48AofuB+relQtjTEK/hyBf7sPwrbqAarjRjlyEx6Qy5gTXyx
+M9attfNAeupYR6jm8LKm6TFpfWkyDxUmj/f5pJMBWNTomV74f8iQ2M18/KWMUDCO
+f80tR0t21Q1iCWdvA3K/KJn05tTLyumlwwlQijMqRkYuao+CX9L3DJIaB3VPYPTS
+IPUr7oi16agsuamOyiOtlZiRpEvoNg2ksJMZtwnj5xhBQydkdhMW2ZpHDzcLuZlh
+JYZL/l3/7wuzRM7vpyA9obP92CpZRFJErGZmFxJC93I4U9+0B0wg+sbyMKGJ5j1B
+WTnibCklDXtWzXtuiz18EgECAwEAAQ==
+-----END PUBLIC KEY-----
+`
+
+const baseURL = 'https://www.https-rulesets.org/v1/'
+
+const getTimestamp = () =>
+  requestPromise({
+    method: 'get',
+    url: `${baseURL}latest-rulesets-timestamp`,
+    encoding: 'utf8'
+  }).then(response => Number(response))
+
+const downloadRulesets = timestamp =>
+  Promise.all([
+    requestPromise({
+      method: 'get',
+      url: `${baseURL}default.rulesets.${timestamp}.gz`,
+      encoding: null
+    }),
+    requestPromise({
+      method: 'get',
+      url: `${baseURL}rulesets-signature.${timestamp}.sha256`,
+      encoding: null
     })
-
-    // Download the rulesets once we obtained the timestamp
-    response.on('end', () => {
-      // ${timestamp} comes with trailing newlines, parse it and convert it back
-      const target = `default.rulesets.${Number(timestamp)}.gz`
-
-      https.get(baseURL + target, (stream) => {
-        // ${target} is gzipped, gunzip accordingly
-        // and pipe the output to ${filename}
-        const filename = path.join(dir, 'default.rulesets')
-        const output = fs.createWriteStream(filename)
-
-        stream.pipe(zlib.createGunzip()).pipe(output)
-
-        output.on('finish', () => {
-          output.close(() => {
-            // everything is fine here
-            cb()
-          }, (err) => {
-            console.log(`ERROR: Failed to write to ${filename}: ${err}`)
+  ]).then(
+    ([rulesetBuffer, signatureBuffer]) =>
+      new Promise((resolve, reject) => {
+        if (
+          crypto
+            .createVerify('sha256')
+            .update(rulesetBuffer)
+            .verify(
+              {
+                key: publicKey,
+                padding: crypto.constants.RSA_PKCS1_PSS_PADDING
+              },
+              signatureBuffer
+            )
+        ) {
+          gunzip(rulesetBuffer, (err, result) => {
+            if (err) {
+              reject(err)
+            } else {
+              resolve(result)
+            }
           })
-        })
-      }).on('error', (err) => {
-        console.log(`ERROR: Failed to retrieve ${target}: ${err}`)
-      }).end()
-    })
-  }).on('error', (err) => {
-    console.log(`ERROR: Failed to retrieve the latest rulesets timestamp: ${err}`)
-  }).end()
-}
+        } else {
+          reject(new Error('Signature check failed'))
+        }
+      })
+  )
 
-const buildDataFiles = () => {
+const buildDataFiles = buffer => {
   // Manually exclude sites that are broken until they are fixed in the next
   // HTTPS Everywhere release.
   const exclusions = {}
 
-  let rulesets = JSON.parse(fs.readFileSync('./https-everywhere/rules/default.rulesets', 'utf8'))
+  let rulesets = JSON.parse(buffer.toString('utf8'))
   if (rulesets != null) {
     rulesets = rulesets.rulesets
   }
@@ -171,11 +199,11 @@ const buildDataFiles = () => {
   })
 }
 
-rmDir('./https-everywhere')
-fs.mkdirSync('./https-everywhere')
-fs.mkdirSync('./https-everywhere/rules')
 rmDir('./out')
 fs.mkdirSync('./out')
 
 console.log('downloading rulesets')
-downloadRulesets('./https-everywhere/rules', buildDataFiles)
+getTimestamp()
+  .then(downloadRulesets)
+  .then(buildDataFiles)
+  .catch(console.error)
