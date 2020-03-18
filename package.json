@@ -10,9 +10,14 @@
     "s3-client": "^4.4.2"
   },
   "devDependencies": {
+    "npm-force-resolutions": "0.0.3",
     "standard": "^13.0.0"
   },
+  "resolutions": {
+    "minimist": "1.2.3"
+  },
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "build": "node scripts/preloadHTTPSE.js",
     "check-security": "npm audit",
     "lint": "standard",
