@@ -3,7 +3,6 @@
   "version": "6.0.0",
   "description": "https everywhere ruleset builder for Brave",
   "dependencies": {
-    "commander": "^2.11.0",
     "level": "^5.0.1",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
