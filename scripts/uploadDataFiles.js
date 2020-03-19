@@ -1,6 +1,5 @@
 const fs = require('fs')
 const s3 = require('s3-client')
-const commander = require('commander')
 const process = require('process')
 
 const splitVersion = process.env.npm_package_version.split('.')
@@ -41,17 +40,13 @@ const uploadFile = (key, filePath, filename) => {
   })
 }
 
-commander
-  .option('-p, --prod', 'whether the upload is for prod, if not specified uploads to the test location')
-  .parse(process.argv)
-
 // Queue up all the uploads one at a time to easily spot errors
 let p = Promise.resolve()
 const date = new Date().toISOString().split('.')[0]
 
 const dataFilenames = fs.readdirSync('out')
 dataFilenames.forEach((filename) => {
-  if (commander.prod) {
+  if (process.argv.slice(2).indexOf("--prod") > -1 || process.argv.slice(2).indexOf("-p") > -1) {
     p = p.then(uploadFile.bind(null, dataFileVersion, `out/${filename}`, filename)).catch(() => {
       process.exit(1)
     })
