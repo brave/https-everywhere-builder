@@ -9,13 +9,9 @@
     "request-promise-native": "^1.0.7",
     "s3-client": "^4.4.2"
   },
-  "devDependencies": {
-    "standard": "^13.0.0"
-  },
   "scripts": {
     "build": "node scripts/preloadHTTPSE.js",
     "check-security": "npm audit",
-    "lint": "standard",
     "upload": "node scripts/uploadDataFiles.js"
   },
   "license": "MPL-2.0"

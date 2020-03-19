@@ -98,10 +98,10 @@ const buildDataFiles = buffer => {
       }
 
       for (const target of ruleset.target) {
-        if (!jsonOutput['targets'][target]) {
-          jsonOutput['targets'][target] = []
+        if (!jsonOutput.targets[target]) {
+          jsonOutput.targets[target] = []
         }
-        jsonOutput['targets'][target].push(jsonOutput['rulesetStrings'].length)
+        jsonOutput.targets[target].push(jsonOutput.rulesetStrings.length)
       }
 
       const r = {
@@ -124,7 +124,7 @@ const buildDataFiles = buffer => {
         })
       }
 
-      jsonOutput['rulesetStrings'].push(r)
+      jsonOutput.rulesetStrings.push(r)
     }
   }
 
