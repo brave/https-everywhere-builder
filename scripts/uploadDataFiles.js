@@ -1,41 +1,34 @@
 const fs = require('fs')
-const s3 = require('s3-client')
+const aws = require('aws-sdk')
 const process = require('process')
 
 const splitVersion = process.env.npm_package_version.split('.')
 splitVersion.splice(2)
 const dataFileVersion = splitVersion.join('.')
 
-const client = s3.createClient({
-  maxAsyncS3: 20,
-  s3RetryCount: 3,
-  s3RetryDelay: 1000,
-  multipartUploadThreshold: 20971520,
-  multipartUploadSize: 15728640,
-  // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property
-  s3Options: {}
+const client = new aws.S3({
+  maxRetries: 3,
+  retryDelayOptions: { base: 1000 },
 })
 
 const uploadFile = (key, filePath, filename) => {
   return new Promise((resolve, reject) => {
     var params = {
-      localFile: filePath,
       // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
-      s3Params: {
-        Bucket: 'https-everywhere-data',
-        Key: `${key}/${filename}`,
-        ACL: 'public-read'
-      }
+      Body: fs.createReadStream(filePath),
+      Bucket: 'https-everywhere-data',
+      Key: `${key}/${filename}`,
+      ACL: 'public-read'
     }
-    var uploader = client.uploadFile(params)
-    process.stdout.write(`Started uploading to: ${params.s3Params.Key}... `)
-    uploader.on('error', function (err) {
-      console.error('Unable to upload:', err.stack, 'Do you have ~/.aws/credentials filled out?')
-      reject(new Error('Unable to upload'))
-    })
-    uploader.on('end', function (params) {
-      console.log('completed')
-      resolve()
+    console.log(`Started uploading to: ${params.Key}... `)
+    client.putObject(params, function(err, data) {
+      if (err) {
+        console.error('Unable to upload:', err.stack, 'Do you have ~/.aws/credentials filled out?')
+        reject(new Error('Unable to upload'))
+      } else {
+        console.log('completed')
+        resolve()
+      }
     })
   })
 }
