@@ -4,8 +4,6 @@
   "description": "https everywhere ruleset builder for Brave",
   "dependencies": {
     "level": "^5.0.1",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.7",
     "s3-client": "^4.4.2"
   },
   "scripts": {
