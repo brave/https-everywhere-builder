@@ -2,7 +2,7 @@
 const fs = require('fs')
 const { gunzip } = require('zlib')
 const crypto = require('crypto')
-const requestPromise = require('request-promise-native')
+const https = require('https')
 const levelup = require('level')
 const rmDir = require('./util').rmDir
 const exec = require('child_process').exec
@@ -28,24 +28,41 @@ WTnibCklDXtWzXtuiz18EgECAwEAAQ==
 
 const baseURL = 'https://www.https-rulesets.org/v1/'
 
+function requestPromise(options) {
+  return new Promise((resolve, reject) => {
+    const req = https.request(options.url, res => {
+      let data = ""
+      res.setEncoding('binary')
+
+      res.on('data', (chunk) => {
+        data += chunk
+      })
+
+      res.on('end', () => {
+        resolve(Buffer.from(data, 'binary'))
+      })
+    })
+
+    req.on('error', error => {
+      reject(new Error('Unable to fetch: ' + error))
+    })
+
+    req.end()
+  })
+}
+
 const getTimestamp = () =>
   requestPromise({
-    method: 'get',
     url: `${baseURL}latest-rulesets-timestamp`,
-    encoding: 'utf8'
   }).then(response => Number(response))
 
 const downloadRulesets = timestamp =>
   Promise.all([
     requestPromise({
-      method: 'get',
       url: `${baseURL}default.rulesets.${timestamp}.gz`,
-      encoding: null
     }),
     requestPromise({
-      method: 'get',
       url: `${baseURL}rulesets-signature.${timestamp}.sha256`,
-      encoding: null
     })
   ]).then(
     ([rulesetBuffer, signatureBuffer]) =>
