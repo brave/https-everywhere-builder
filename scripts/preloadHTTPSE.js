@@ -200,7 +200,7 @@ const buildDataFiles = buffer => {
         if (err) {
           console.error(err)
         } else {
-          exec('zip -r httpse.leveldb.zip httpse.leveldb && tar -czf httpse.leveldb.tgz httpse.leveldb', {
+          exec('zip -r -9 httpse.leveldb.zip httpse.leveldb && GZIP=-9 tar -czf httpse.leveldb.tgz httpse.leveldb', {
             cwd: 'out'
           }, (err) => {
             if (err) {
