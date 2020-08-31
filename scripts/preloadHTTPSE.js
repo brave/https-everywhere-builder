@@ -148,70 +148,28 @@ const buildDataFiles = buffer => {
   console.log('Writing httpse.json')
   fs.writeFileSync('./out/httpse.json', JSON.stringify(jsonOutput), 'utf8')
 
-  console.log('creating httpse.leveldb')
-  rmDir('./out/httpse.leveldb')
+  console.log('creating httpse-rs.json')
 
-  const httpseLevelDB = levelup('./out/httpse.leveldb', {
-    compression: false, errorIfExists: true
+  const rulesetsWithoutExclusions = rulesets.filter((ruleset) => {
+    if (ruleset.default_off || ruleset.platform) {
+      return false
+    }
+    if (ruleset.name in exclusions) {
+      console.log('NOTE: Excluding ruleset:', ruleset.name)
+      return false
+    }
+    return true
   })
 
-  const batch = httpseLevelDB.batch()
-
-  for (const ruleset of rulesets) {
-    if (!ruleset.default_off && !ruleset.platform) {
-      if (ruleset.name in exclusions) {
-        console.log('NOTE: Excluding ruleset:', ruleset.name)
-        continue
-      }
-
-      let targetRuleSets = []
-      const rule = {
-        r: ruleset.rule.map((rule) => {
-          if (rule.from === '^http:' && rule.to === 'https:') {
-            return { d: 1 }
-          } else {
-            return { f: rule.from, t: rule.to }
-          }
-        })
-      }
-      if (ruleset.exclusion) {
-        rule.e = ruleset.exclusion.map((exclusion) => {
-          return { p: exclusion.pattern }
-        })
-      }
-      targetRuleSets = targetRuleSets.concat(rule)
-
-      for (const target of ruleset.target) {
-        const reverseTarget = target.split('.').reverse().join('.')
-        if (targetRuleSets.length > 0) {
-          batch.put(reverseTarget, JSON.stringify(targetRuleSets), {
-            sync: true
-          })
-        }
-      }
-    }
-  }
-
-  batch.write((err) => {
+  fs.writeFileSync('./out/httpse-rs.json', JSON.stringify(rulesetsWithoutExclusions), 'utf8')
+  exec('zip -r -9 httpse-rs.json.zip httpse-rs.json && GZIP=-9 tar -czf httpse-rs.json.tgz httpse-rs.json', {
+    cwd: 'out'
+  }, (err) => {
     if (err) {
-      console.error(err)
+      throw err
     } else {
-      httpseLevelDB.close((err) => {
-        if (err) {
-          console.error(err)
-        } else {
-          exec('zip -r -9 httpse.leveldb.zip httpse.leveldb && GZIP=-9 tar -czf httpse.leveldb.tgz httpse.leveldb', {
-            cwd: 'out'
-          }, (err) => {
-            if (err) {
-              throw err
-            } else {
-              rmDir('./out/httpse.leveldb')
-              console.log('done')
-            }
-          })
-        }
-      })
+      fs.unlinkSync('./out/httpse-rs.json')
+      console.log('done')
     }
   })
 }
