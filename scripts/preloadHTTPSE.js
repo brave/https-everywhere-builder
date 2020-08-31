@@ -3,7 +3,6 @@ const fs = require('fs')
 const { gunzip } = require('zlib')
 const crypto = require('crypto')
 const https = require('https')
-const levelup = require('level')
 const rmDir = require('./util').rmDir
 const exec = require('child_process').exec
 
@@ -101,52 +100,6 @@ const buildDataFiles = buffer => {
   if (rulesets != null) {
     rulesets = rulesets.rulesets
   }
-
-  const jsonOutput = {
-    rulesetStrings: [],
-    targets: {}
-  }
-
-  for (const ruleset of rulesets) {
-    if (!ruleset.default_off && !ruleset.platform) {
-      if (ruleset.name in exclusions) {
-        console.log('NOTE: Excluding ruleset:', ruleset.name)
-        continue
-      }
-
-      for (const target of ruleset.target) {
-        if (!jsonOutput.targets[target]) {
-          jsonOutput.targets[target] = []
-        }
-        jsonOutput.targets[target].push(jsonOutput.rulesetStrings.length)
-      }
-
-      const r = {
-        ruleset: {
-          name: ruleset.name,
-          rule: ruleset.rule.map((rule) => {
-            return {
-              from: rule.from,
-              to: rule.to
-            }
-          })
-        }
-      }
-
-      if (ruleset.exclusion) {
-        r.exclusion = ruleset.exclusion.map((exclusion) => {
-          return {
-            pattern: exclusion
-          }
-        })
-      }
-
-      jsonOutput.rulesetStrings.push(r)
-    }
-  }
-
-  console.log('Writing httpse.json')
-  fs.writeFileSync('./out/httpse.json', JSON.stringify(jsonOutput), 'utf8')
 
   console.log('creating httpse-rs.json')
 

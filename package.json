@@ -3,8 +3,7 @@
   "version": "7.0.0",
   "description": "https everywhere ruleset builder for Brave",
   "dependencies": {
-    "aws-sdk": "^2.656.0",
-    "level": "^6.0.1"
+    "aws-sdk": "^2.656.0"
   },
   "scripts": {
     "build": "node scripts/preloadHTTPSE.js",
