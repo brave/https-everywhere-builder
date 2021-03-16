@@ -16,7 +16,7 @@ const uploadFile = (key, filePath, filename) => {
     var params = {
       // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
       Body: fs.createReadStream(filePath),
-      Bucket: S3_BUCKET,
+      Bucket: process.env.S3_BUCKET,
       Key: `${key}/${filename}`,
       GrantFullControl: process.env.S3_CANONICAL_ID,
       GrantRead: process.env.CLOUDFRONT_CANONICAL_ID
