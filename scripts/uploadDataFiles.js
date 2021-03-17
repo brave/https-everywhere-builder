@@ -16,9 +16,10 @@ const uploadFile = (key, filePath, filename) => {
     var params = {
       // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
       Body: fs.createReadStream(filePath),
-      Bucket: 'https-everywhere-data',
+      Bucket: process.env.S3_BUCKET,
       Key: `${key}/${filename}`,
-      ACL: 'public-read'
+      GrantFullControl: process.env.S3_CANONICAL_ID,
+      GrantRead: process.env.CLOUDFRONT_CANONICAL_ID
     }
     console.log(`Started uploading to: ${params.Key}... `)
     client.putObject(params, function(err, data) {
