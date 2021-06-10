@@ -1,32 +1,11 @@
 'use strict'
 const fs = require('fs')
-const { gunzip } = require('zlib')
-const crypto = require('crypto')
 const https = require('https')
 const levelup = require('level')
 const rmDir = require('./util').rmDir
 const exec = require('child_process').exec
 
-// Taken from https://github.com/EFForg/https-everywhere/issues/18138#issuecomment-509430039
-
-const publicKey = `\
------BEGIN PUBLIC KEY-----
-MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA1cwvFQu3Kw+Pz8bcEFuV
-5zx0ZheDsc4Tva7Qv6BL90/sDLqCW79Y543nDkPtNVfFH/89pt2kSPp/IcS5XnYi
-w6zBQeFuILFw5JpvZt14K0s4e025Q9CXfhYKIBKT9PnqihwAacjMa6rQb7RTu7Xx
-VvqxRb3b0vx2CR40LSlYZ8H/KpeaUwq2oz+fyrI6LFTeYvbO3ZuLKeK5xV1a32xe
-TVMFkIj3LxnQalxq+DRHfj7LRRoTnbRDW4uoDc8aVpLFliuO79jUKbobz4slpiWJ
-4wjKR/O6OK13HbZUiOSxi8Bms+UqBPOyzbMVpmA7lv/zWdaLu1IVlVXQyLVbbrqI
-6llRqfHdcJoEl+eC48AofuB+relQtjTEK/hyBf7sPwrbqAarjRjlyEx6Qy5gTXyx
-M9attfNAeupYR6jm8LKm6TFpfWkyDxUmj/f5pJMBWNTomV74f8iQ2M18/KWMUDCO
-f80tR0t21Q1iCWdvA3K/KJn05tTLyumlwwlQijMqRkYuao+CX9L3DJIaB3VPYPTS
-IPUr7oi16agsuamOyiOtlZiRpEvoNg2ksJMZtwnj5xhBQydkdhMW2ZpHDzcLuZlh
-JYZL/l3/7wuzRM7vpyA9obP92CpZRFJErGZmFxJC93I4U9+0B0wg+sbyMKGJ5j1B
-WTnibCklDXtWzXtuiz18EgECAwEAAQ==
------END PUBLIC KEY-----
-`
-
-const baseURL = 'https://www.https-rulesets.org/v1/'
+const rulesetURL = 'https://raw.githubusercontent.com/brave/https-everywhere-ruleset/main/httpse.json'
 
 function requestPromise(options) {
   return new Promise((resolve, reject) => {
@@ -50,47 +29,6 @@ function requestPromise(options) {
     req.end()
   })
 }
-
-const getTimestamp = () =>
-  requestPromise({
-    url: `${baseURL}latest-rulesets-timestamp`,
-  }).then(response => Number(response))
-
-const downloadRulesets = timestamp =>
-  Promise.all([
-    requestPromise({
-      url: `${baseURL}default.rulesets.${timestamp}.gz`,
-    }),
-    requestPromise({
-      url: `${baseURL}rulesets-signature.${timestamp}.sha256`,
-    })
-  ]).then(
-    ([rulesetBuffer, signatureBuffer]) =>
-      new Promise((resolve, reject) => {
-        if (
-          crypto
-            .createVerify('sha256')
-            .update(rulesetBuffer)
-            .verify(
-              {
-                key: publicKey,
-                padding: crypto.constants.RSA_PKCS1_PSS_PADDING
-              },
-              signatureBuffer
-            )
-        ) {
-          gunzip(rulesetBuffer, (err, result) => {
-            if (err) {
-              reject(err)
-            } else {
-              resolve(result)
-            }
-          })
-        } else {
-          reject(new Error('Signature check failed'))
-        }
-      })
-  )
 
 const buildDataFiles = buffer => {
   // Manually exclude sites that are broken until they are fixed in the next
@@ -220,7 +158,8 @@ rmDir('./out')
 fs.mkdirSync('./out')
 
 console.log('downloading rulesets')
-getTimestamp()
-  .then(downloadRulesets)
+requestPromise({
+    url: rulesetURL,
+  })
   .then(buildDataFiles)
   .catch(console.error)
