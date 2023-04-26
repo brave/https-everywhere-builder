@@ -1,5 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "labels": [
+    "dependencies",
+    "renovate"
+  ],
+  "schedule": [
+    "before 3am on Monday"
+  ],
   "extends": [
     "config:base"
   ]
