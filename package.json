@@ -4,7 +4,7 @@
   "description": "https everywhere ruleset builder for Brave",
   "dependencies": {
     "aws-sdk": "^2.1354.0",
-    "level": "^6.0.1"
+    "level": "^8.0.0"
   },
   "scripts": {
     "build": "node scripts/preloadHTTPSE.js",
