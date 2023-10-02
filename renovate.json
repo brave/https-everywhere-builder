@@ -8,6 +8,6 @@
     "before 3am on Monday"
   ],
   "extends": [
-    "config:base"
+    "local>brave/renovate-config"
   ]
 }
