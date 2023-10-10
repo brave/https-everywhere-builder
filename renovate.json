@@ -9,5 +9,12 @@
   ],
   "extends": [
     "local>brave/renovate-config"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["aws-sdk"],
+      "extends": ["default:automergeMinor"],
+      "enabled": true
+    }
   ]
 }
