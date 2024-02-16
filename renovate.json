@@ -16,5 +16,6 @@
       "extends": ["default:automergeMinor"],
       "enabled": true
     }
-  ]
+  ],
+  "platformAutomerge": true
 }
